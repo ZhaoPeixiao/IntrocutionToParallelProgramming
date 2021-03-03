@@ -5,7 +5,7 @@
 
 const int MAX_STRING = 100;
 
-int main(void)
+int mpi_hello(void)
 {
 	char greeting[100];
 	int comm_sz;

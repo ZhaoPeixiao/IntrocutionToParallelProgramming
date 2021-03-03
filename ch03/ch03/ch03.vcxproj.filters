@@ -15,7 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mpi_hello.c">
+    <ClInclude Include="Trapezoidal.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="mpi_hello.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
