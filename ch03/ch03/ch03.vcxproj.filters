@@ -21,6 +21,12 @@
     <ClInclude Include="mpi_hello.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="vector_sum.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vector_mult.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">

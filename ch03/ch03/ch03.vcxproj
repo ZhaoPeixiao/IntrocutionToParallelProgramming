@@ -148,6 +148,8 @@
   <ItemGroup>
     <ClInclude Include="mpi_hello.h" />
     <ClInclude Include="Trapezoidal.h" />
+    <ClInclude Include="vector_mult.h" />
+    <ClInclude Include="vector_sum.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
