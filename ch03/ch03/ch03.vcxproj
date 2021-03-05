@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mpi_hello.h" />
+    <ClInclude Include="oddEvenSort.h" />
     <ClInclude Include="Trapezoidal.h" />
     <ClInclude Include="vector_mult.h" />
     <ClInclude Include="vector_sum.h" />
