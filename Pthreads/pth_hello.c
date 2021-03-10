@@ -6,6 +6,7 @@
 /* Global variable: accessible for all threads*/
 
 int thread_count;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void* Hello(void* rank); /* thread function*/
 
@@ -26,6 +27,7 @@ void* Pth_mat_vect(void* rank); /* calculate mat multi*/
 /*calculate pi */
 const long pi_n = 1e8;
 double sum = 0.0;
+int pi_flag = 0;
 void* Thread_sum(void* rank);
 
 
@@ -95,7 +97,7 @@ void* Pth_mat_vect(void* rank)
 void* Thread_sum(void* rank)
 {
 	long my_rank = (long)rank;
-	double factory;
+	double factory, my_sum = 0.0;
 	long long i;
 	long long my_n = pi_n / thread_count;
 	long long my_first_i = my_n * my_rank;
@@ -112,8 +114,20 @@ void* Thread_sum(void* rank)
 
 	for (i = my_first_i; i < my_last_i; i++, factory = -factory)
 	{
-		sum += factory / (2 * i + 1);
+		my_sum += factory / (2 * i + 1);
 	}
 
+	// Ã¦µÈ´ý
+	/*	
+	while (pi_flag != my_rank);
+	sum += my_sum;
+	pi_flag = (pi_flag + 1) % thread_count; 
+	*/
+
+	// »¥³âÁ¿
+	pthread_mutex_lock(&mutex);
+	sum += my_sum;
+	pthread_mutex_unlock(&mutex);
+
 	return NULL;
-}
+}-
