@@ -1,6 +1,8 @@
 #pragma comment(lib, "pthreadVC2.lib")
 #include<stdio.h>
 #include<stdlib.h>
+#include <string.h>
+#include <semaphore.h>
 #include<pthread.h>
 
 /* Global variable: accessible for all threads*/
@@ -29,6 +31,12 @@ const long pi_n = 1e8;
 double sum = 0.0;
 int pi_flag = 0;
 void* Thread_sum(void* rank);
+
+/* 多线程分词器*/
+#define MAXLEN 128;
+sem_t sem[];
+void* Tokenize(void* rank);
+
 
 
 int main(int argc, char* argv[])
@@ -130,4 +138,29 @@ void* Thread_sum(void* rank)
 	pthread_mutex_unlock(&mutex);
 
 	return NULL;
-}-
+}
+
+void* Tokenize(void* rank)
+{
+	long my_rank = (long)rank;
+	int count;
+	int next = (my_rank + 1) % thread_count;
+	char* fg_rv;
+	char my_line[128];
+	char* my_string;
+
+	sem_wait(&sem[my_rank]);
+	fg_rv = fgets(my_line, 128, stdin);
+	sem_post(&sem[next]);
+
+	while (fg_rv != NULL)
+	{
+		count++;
+		printf("Thread %ld > string %d = %s\n", my_rank, count, my_string);
+		my_string = strtok(NULL, " \t\n");
+	}
+
+	sem_wait(&sem[my_rank]);
+	fg_rv = fgets(my_line, 128, stdin);
+	sem_post(&sem[next]);
+}
