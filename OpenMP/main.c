@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<stdlib.h>
+#include<math.h>
 #include<omp.h>
 
 void Hello(void);
@@ -11,6 +12,18 @@ double Pi(int n, int thread_count);
 double f(double x)
 {
 	return x * x + 2.0 * x - 1.5;
+}
+
+double f(int i)
+{
+	int j, start = i * (i + 1) / 2, finish = start + i;
+	double return_val = 0.0;
+
+	for (j = start; j <= finish; j++)
+	{
+		return_val += sin(j);
+	}
+	return return_val;
 }
 
 int main(int argc, char* argv[])
@@ -119,3 +132,93 @@ double Pi(int n, int thread_count)
 	return pi_approx;
 }
 
+void Sort1(int a[], int n, int thread_count)
+{
+	int phase, i, tmp;
+	for (phase = 0; phase < n; phase++)
+	{
+		if (phase % 2 == 0)
+		{
+# pragma omp parallel for num_threads(thread_count) default(none) shared(a, n) private(i, tmp)
+			for (i = 1; i < n; i += 2)
+			{
+				if (a[i - 1] > a[i])
+				{
+					tmp = a[i - 1];
+					a[i - 1] = a[i];
+					a[i] = tmp;
+				}
+			}
+		}
+		else
+		{
+#pragma omp parallel for num_threads(thread_count) default(none) shared(a, n) private(i, tmp)
+			for (i = 1; i < n - 1; i += 2)
+			{
+				if (a[i] > a[i + 1])
+				{
+					tmp = a[i + 1];
+					a[i + 1] = a[i];
+					a[i] = tmp;
+				}
+			}
+		}
+	}
+}
+
+
+void Sort2(int a[], int n, int thread_count)
+{
+	int phase, i, tmp;
+#pragma omp parallel num_threads(thread_count) default(none) shared(a, n) private(i, tmp, phase)
+	{
+		for (phase = 0; phase < n; phase++)
+		{
+			if (phase % 2 == 0)
+			{
+#pragma omp for
+				for (i = 1; i < n; i += 2)
+				{
+					if (a[i - 1] > a[i])
+					{
+						tmp = a[i - 1];
+						a[i - 1] = a[i];
+						a[i] = tmp;
+					}
+				}
+			}
+			else
+			{
+#pragma omp for
+				for (i = 1; i < n - 1; i += 2)
+				{
+					if (a[i] > a[i + 1])
+					{
+						tmp = a[i + 1];
+						a[i + 1] = a[i];
+						a[i] = tmp;
+					}
+				}
+			}
+		}
+	}
+}
+
+// 循环调度
+/*
+1. static: 轮转分配
+2. dynamic: 运行完请求下一块
+3. guided: 请求的下一块会变小
+4. runtime: 调用OMP_SCHEDULE定义的值
+
+系统开销：guided > dynamic > static
+*/
+void Test1(int n, int thread_count)
+{
+	double sum = 0.0;
+#pragma omp parallel for num_threads(thread_count) reduction(+:sum) schedule(static,1)
+	for (int i = 0; i <= n; i++)
+	{
+		sum += f(i);
+	}
+}
